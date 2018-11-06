@@ -15,6 +15,7 @@ import (
 	"syscall"
 	"unsafe"
 
+	"github.com/DataDog/datadog-agent/pkg/metadata/checkmetadata"
 	"github.com/DataDog/datadog-agent/pkg/metadata/externalhost"
 
 	"github.com/DataDog/datadog-agent/pkg/util/log"
@@ -292,6 +293,17 @@ func SetExternalTags(hostname, sourceType *C.char, tags **C.char, tagsLen C.int)
 	}
 
 	externalhost.SetExternalTags(hname, stype, tagsStrings)
+	return C._none()
+}
+
+// SetCheckMetadata adds a JSON payload to the metadata cache.
+// Indirectly used by the C function `set_check_metadata` that's mapped to `datadog_agent.set_check_metadata`.
+//export SetCheckMetadata
+func SetCheckMetadata(checkID, metadata *C.char) *C.PyObject {
+	cid := C.GoString(checkID)
+	meta := C.GoString(metadata)
+
+	checkmetadata.SetCheckMetadata(cid, meta)
 	return C._none()
 }
 

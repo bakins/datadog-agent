@@ -8,9 +8,26 @@ package agentchecks
 import (
 	"testing"
 
+	"github.com/DataDog/datadog-agent/pkg/metadata/checkmetadata"
 	"github.com/DataDog/datadog-agent/pkg/metadata/externalhost"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestCheckMetadata(t *testing.T) {
+	checkID1 := "directory:12345"
+	checkID2 := "directory:56789"
+	metadata1 := "{\"option\":true}"
+	metadata2 := "{\"option\":false}"
+	metadata3 := "{\"option\":null}"
+
+	checkmetadata.SetCheckMetadata(checkID1, metadata1)
+	checkmetadata.SetCheckMetadata(checkID1, metadata2)
+	checkmetadata.SetCheckMetadata(checkID2, metadata3)
+
+	pl := GetPayload()
+	cmpl := pl.CheckMetadataPayload.Payload
+	assert.Len(t, cmpl, 2)
+}
 
 func TestExternalHostTags(t *testing.T) {
 	host1 := "localhost"
